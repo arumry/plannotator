@@ -25,11 +25,13 @@ plannotator/
 ## Installation
 
 **Via plugin marketplace** (when repo is public):
+
 ```
 /plugin marketplace add backnotprop/plannotator
 ```
 
 **Local testing:**
+
 ```bash
 claude --plugin-dir ./apps/hook
 ```
@@ -53,11 +55,11 @@ Deny    → stdout: {"hookSpecificOutput":{"decision":{"behavior":"deny","messag
 
 ## Server API
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/plan` | GET | Returns plan markdown as JSON |
-| `/api/approve` | POST | User approved the plan |
-| `/api/deny` | POST | User denied with feedback in body |
+| Endpoint       | Method | Purpose                           |
+| -------------- | ------ | --------------------------------- |
+| `/api/plan`    | GET    | Returns plan markdown as JSON     |
+| `/api/approve` | POST   | User approved the plan            |
+| `/api/deny`    | POST   | User denied with feedback in body |
 
 **Location:** `apps/hook/server/index.ts`
 
@@ -69,10 +71,10 @@ The server reads the hook event from stdin, extracts `tool_input.plan`, and serv
 
 ```typescript
 enum AnnotationType {
-  DELETION = 'DELETION',
-  INSERTION = 'INSERTION',
-  REPLACEMENT = 'REPLACEMENT',
-  COMMENT = 'COMMENT',
+  DELETION = "DELETION",
+  INSERTION = "INSERTION",
+  REPLACEMENT = "REPLACEMENT",
+  COMMENT = "COMMENT",
 }
 
 interface Annotation {
@@ -81,20 +83,20 @@ interface Annotation {
   startOffset: number;
   endOffset: number;
   type: AnnotationType;
-  text?: string;           // For comment/replacement/insertion
-  originalText: string;    // The selected text
-  createdA: number;        // Timestamp
-  author?: string;         // Tater identity
-  startMeta?: { parentTagName, parentIndex, textOffset };
-  endMeta?: { parentTagName, parentIndex, textOffset };
+  text?: string; // For comment/replacement/insertion
+  originalText: string; // The selected text
+  createdA: number; // Timestamp
+  author?: string; // Tater identity
+  startMeta?: { parentTagName; parentIndex; textOffset };
+  endMeta?: { parentTagName; parentIndex; textOffset };
 }
 
 interface Block {
   id: string;
-  type: 'paragraph' | 'heading' | 'blockquote' | 'list-item' | 'code' | 'hr';
+  type: "paragraph" | "heading" | "blockquote" | "list-item" | "code" | "hr";
   content: string;
-  level?: number;          // For headings (1-6)
-  language?: string;       // For code blocks
+  level?: number; // For headings (1-6)
+  language?: string; // For code blocks
   order: number;
   startLine: number;
 }
@@ -105,6 +107,7 @@ interface Block {
 **Location:** `packages/ui/utils/parser.ts`
 
 `parseMarkdownToBlocks(markdown)` splits markdown into Block objects. Handles:
+
 - Headings (`#`, `##`, etc.)
 - Code blocks (``` with language extraction)
 - List items (`-`, `*`, `1.`)
@@ -128,26 +131,29 @@ Text highlighting uses `web-highlighter` library. Code blocks use manual `<mark>
 Shares full plan + annotations via URL hash using deflate compression.
 
 **Payload format:**
+
 ```typescript
 interface SharePayload {
-  p: string;                    // Plan markdown
-  a: ShareableAnnotation[];     // Compact annotations
+  p: string; // Plan markdown
+  a: ShareableAnnotation[]; // Compact annotations
 }
 
 type ShareableAnnotation =
-  | ['D', string, string | null]              // [type, original, author]
-  | ['R', string, string, string | null]      // [type, original, replacement, author]
-  | ['C', string, string, string | null]      // [type, original, comment, author]
-  | ['I', string, string, string | null];     // [type, context, newText, author]
+  | ["D", string, string | null] // [type, original, author]
+  | ["R", string, string, string | null] // [type, original, replacement, author]
+  | ["C", string, string, string | null] // [type, original, comment, author]
+  | ["I", string, string, string | null]; // [type, context, newText, author]
 ```
 
 **Compression pipeline:**
+
 1. `JSON.stringify(payload)`
 2. `CompressionStream('deflate-raw')`
 3. Base64 encode
 4. URL-safe: replace `+/=` with `-_`
 
 **On load from shared URL:**
+
 1. Parse hash, decompress, restore annotations
 2. Find text positions in rendered DOM via text search
 3. Apply `<mark>` highlights
@@ -161,26 +167,35 @@ Uses cookies instead of localStorage because each hook invocation runs on a rand
 
 ## Syntax Highlighting
 
-Code blocks use bundled `highlight.js`. Language is extracted from fence (```rust) and applied as `language-{lang}` class. Each block highlighted individually via `hljs.highlightElement()`.
-
-## Development
-
-```bash
-# Install dependencies
-bun install
-
-# Dev server (UI development)
-bun run dev:hook
-
-# Build for production
-bun run build:hook
-
-# Test plugin locally
-claude --plugin-dir ./apps/hook
-```
+Code blocks use bundled `highlight.js`. Language is extracted from fence (```rust) and applied as `language-{lang}`class. Each block highlighted individually via`hljs.highlightElement()`.
 
 ## Requirements
 
 - Bun runtime
 - Claude Code with plugin/hooks support
 - macOS (uses `open` command for browser)
+
+## Development
+
+```bash
+bun install
+
+# Run any app
+bun run dev:hook       # Hook server
+bun run dev:portal     # Portal editor
+bun run dev:marketing  # Marketing site
+```
+
+## Build
+
+```bash
+bun run build:hook       # Single-file HTML for hook server
+bun run build:portal     # Static build for share.plannotator.ai
+bun run build:marketing  # Static build for plannotator.ai
+```
+
+## Test plugin locally
+
+```
+claude --plugin-dir ./apps/hook
+```

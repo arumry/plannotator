@@ -45,25 +45,6 @@ When Claude Code calls `ExitPlanMode`, this hook intercepts and:
 3. Approve → Claude proceeds with implementation
 4. Request changes → Your annotations are sent back to Claude
 
-## Development
-
-```bash
-bun install
-
-# Run any app
-bun run dev:hook       # Hook server
-bun run dev:portal     # Portal editor
-bun run dev:marketing  # Marketing site
-```
-
-## Build
-
-```bash
-bun run build:hook       # Single-file HTML for hook server
-bun run build:portal     # Static build for share.plannotator.ai
-bun run build:marketing  # Static build for plannotator.ai
-```
-
 ---
 
 ## License
