@@ -4,7 +4,7 @@ This directory contains the Claude Code plugin configuration for Plannotator.
 
 ## Prerequisites
 
-Install the binary:
+Install the `plannotator` command so Claude Code can use it:
 
 **macOS / Linux / WSL:**
 ```bash
