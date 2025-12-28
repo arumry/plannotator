@@ -15,7 +15,7 @@ Interactive Plan Review: Mark up and refine your plans using a UI, easily share 
 
 ## Install
 
-Install the plannotator command so Claude Code can use it:
+**Install the `plannotator` command so Claude Code can use it:**
 
 **macOS / Linux / WSL:**
 
@@ -29,14 +29,14 @@ curl -fsSL https://plannotator.ai/install.sh | bash
 irm https://plannotator.ai/install.ps1 | iex
 ```
 
-Then in Claude Code:
+**Then in Claude Code:**
 
 ```
 /plugin marketplace add backnotprop/plannotator
 /plugin install plannotator@plannotator
 ```
 
-See [apps/hook/README.md](apps/hook/README.md) for detailed installation instructions.
+See [apps/hook/README.md](apps/hook/README.md) for detailed installation instructions including a `manual hook` approach.
 
 ## How It Works
 
