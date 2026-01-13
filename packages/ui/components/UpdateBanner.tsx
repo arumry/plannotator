@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useUpdateCheck } from '../hooks/useUpdateCheck';
 
 const INSTALL_COMMAND = 'curl -fsSL https://plannotator.ai/install.sh | bash';
-const OPENCODE_CACHE_COMMAND = 'rm -rf ~/.cache/opencode/node_modules/@plannotator ~/.bun/install/cache/@plannotator';
 
 interface UpdateBannerProps {
   origin?: 'claude-code' | 'opencode' | null;
@@ -11,7 +10,6 @@ interface UpdateBannerProps {
 export const UpdateBanner: React.FC<UpdateBannerProps> = ({ origin }) => {
   const updateInfo = useUpdateCheck();
   const [copied, setCopied] = useState(false);
-  const [copiedCache, setCopiedCache] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   // Debug: ?preview-origin=opencode to test OpenCode-specific UI
@@ -24,19 +22,9 @@ export const UpdateBanner: React.FC<UpdateBannerProps> = ({ origin }) => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(isOpenCode ? OPENCODE_CACHE_COMMAND : INSTALL_COMMAND);
+      await navigator.clipboard.writeText(INSTALL_COMMAND);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      console.error('Failed to copy:', e);
-    }
-  };
-
-  const handleCopyCache = async () => {
-    try {
-      await navigator.clipboard.writeText(OPENCODE_CACHE_COMMAND);
-      setCopiedCache(true);
-      setTimeout(() => setCopiedCache(false), 2000);
     } catch (e) {
       console.error('Failed to copy:', e);
     }
@@ -88,40 +76,25 @@ export const UpdateBanner: React.FC<UpdateBannerProps> = ({ origin }) => {
               You have {updateInfo.currentVersion}
             </p>
 
-            {/* OpenCode cache instructions */}
+            {/* OpenCode extra instructions */}
             {isOpenCode && (
-              <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground mb-2">
-                  Clear cache to update:
-                </p>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 text-[10px] font-mono text-foreground/70 bg-background/50 px-2 py-1 rounded truncate">
-                    {OPENCODE_CACHE_COMMAND}
-                  </code>
-                  <button
-                    onClick={handleCopyCache}
-                    className="px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground border border-border rounded hover:bg-muted transition-colors"
-                  >
-                    {copiedCache ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                Run the install script, then restart OpenCode.
+              </p>
             )}
 
             <div className="mt-4 flex items-center gap-2">
-              {!isOpenCode && (
-                <button
-                  onClick={handleCopy}
-                  className="flex-1 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  {copied ? 'Copied!' : 'Copy install command'}
-                </button>
-              )}
+              <button
+                onClick={handleCopy}
+                className="flex-1 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+              >
+                {copied ? 'Copied!' : 'Copy install command'}
+              </button>
               <a
                 href={updateInfo.releaseUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors ${isOpenCode ? 'flex-1 text-center' : ''}`}
+                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 Release notes
               </a>
