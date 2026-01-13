@@ -77,14 +77,7 @@ Do NOT proceed with implementation until your plan is approved.
           gitContext.defaultBranch
         );
 
-        if (!rawPatch.trim()) {
-          ctx.client.app.log({
-            level: "warn",
-            message: "No changes to review",
-          });
-          return;
-        }
-
+        // Start server even if empty - user can switch diff types
         const server = await startReviewServer({
           rawPatch,
           gitRef,

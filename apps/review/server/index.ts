@@ -51,11 +51,6 @@ try {
   process.exit(1);
 }
 
-if (!rawPatch.trim()) {
-  console.error("No changes to review");
-  process.exit(0);
-}
-
 // Determine display ref for UI
 let displayRef: string;
 if (isStaged) {

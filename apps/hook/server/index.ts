@@ -54,12 +54,7 @@ if (args[0] === "review") {
     gitContext.defaultBranch
   );
 
-  if (!rawPatch.trim()) {
-    console.log("No changes to review.");
-    process.exit(0);
-  }
-
-  // Start review server
+  // Start review server (even if empty - user can switch diff types)
   const server = await startReviewServer({
     rawPatch,
     gitRef,
