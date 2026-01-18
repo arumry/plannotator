@@ -24,10 +24,13 @@
     "build:marketing": "bun run --cwd apps/marketing build",
     "build:opencode": "bun run --cwd apps/opencode-plugin build",
     "build:review": "bun run --cwd apps/review build",
-    "build": "bun run build:hook && bun run build:opencode",
+    "build": "bun run build:review && bun run build:hook && bun run build:opencode",
     "test": "bun test"
   },
   "dependencies": {
     "@pierre/diffs": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.6"
   }
 }

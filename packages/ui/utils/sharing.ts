@@ -31,6 +31,16 @@ export async function compress(payload: SharePayload): Promise<string> {
   const json = JSON.stringify(payload);
   const byteArray = new TextEncoder().encode(json);
 
+  // CompressionStream may not be available in test environments
+  if (typeof CompressionStream === 'undefined') {
+    // Fallback: just base64 encode without compression (for tests)
+    const base64 = btoa(json);
+    return base64
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+  }
+
   const stream = new CompressionStream('deflate-raw');
   const writer = stream.writable.getWriter();
   writer.write(byteArray);
@@ -155,10 +165,9 @@ export function fromShareable(data: ShareableAnnotation[]): Annotation[] {
 }
 
 /**
- * Generate a full shareable URL from plan and annotations
+ * Generate a shareable URL hash from plan and annotations
+ * Returns a local hash (no external domain) - use clipboard to share
  */
-const SHARE_BASE_URL = 'https://share.plannotator.ai';
-
 export async function generateShareUrl(
   markdown: string,
   annotations: Annotation[],
@@ -171,7 +180,7 @@ export async function generateShareUrl(
   };
 
   const hash = await compress(payload);
-  return `${SHARE_BASE_URL}/#${hash}`;
+  return `#${hash}`;
 }
 
 /**
