@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-REPO="backnotprop/plannotator"
+REPO="arumry/plannotator"
 INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local}/bin"
 
 case "$(uname -s)" in
     Darwin) os="darwin" ;;
     Linux)  os="linux" ;;
-    *)      echo "Unsupported OS. For Windows, run: irm https://plannotator.ai/install.ps1 | iex" >&2; exit 1 ;;
+    *)      echo "Unsupported OS. For Windows, use the PowerShell installer." >&2; exit 1 ;;
 esac
 
 case "$(uname -m)" in
@@ -72,10 +72,7 @@ if ! echo "$PATH" | tr ':' '\n' | grep -qx "$INSTALL_DIR"; then
     echo "  source ${shell_config}"
 fi
 
-# Clear any cached OpenCode plugin to force fresh download on next run
-rm -rf "$HOME/.cache/opencode/node_modules/@plannotator" "$HOME/.bun/install/cache/@plannotator" 2>/dev/null || true
-
-# Install /review slash command
+# Install /plannotator-review slash command to user's Claude commands
 CLAUDE_COMMANDS_DIR="$HOME/.claude/commands"
 mkdir -p "$CLAUDE_COMMANDS_DIR"
 
@@ -96,38 +93,13 @@ COMMAND_EOF
 
 echo "Installed /plannotator-review command to ${CLAUDE_COMMANDS_DIR}/plannotator-review.md"
 
-# Install OpenCode slash command
-OPENCODE_COMMANDS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/command"
-mkdir -p "$OPENCODE_COMMANDS_DIR"
-
-cat > "$OPENCODE_COMMANDS_DIR/plannotator-review.md" << 'COMMAND_EOF'
----
-description: Open interactive code review for current changes
----
-
-The Plannotator Code Review has been triggered. Opening the review UI...
-Acknowledge "Opening code review..." and wait for the user's feedback.
-COMMAND_EOF
-
-echo "Installed /plannotator-review command to ${OPENCODE_COMMANDS_DIR}/plannotator-review.md"
-
 echo ""
 echo "=========================================="
-echo "  OPENCODE USERS"
-echo "=========================================="
-echo ""
-echo "Add the plugin to your opencode.json:"
-echo ""
-echo '  "plugin": ["@plannotator/opencode@latest"]'
-echo ""
-echo "Then restart OpenCode. The /plannotator-review command is ready!"
-echo ""
-echo "=========================================="
-echo "  CLAUDE CODE USERS: YOU'RE ALL SET!"
+echo "  INSTALLATION COMPLETE"
 echo "=========================================="
 echo ""
 echo "Install the Claude Code plugin:"
-echo "  /plugin marketplace add backnotprop/plannotator"
-echo "  /plugin install plannotator@plannotator"
+echo "  /plugin marketplace add arumry/claude-marketplace"
+echo "  /plugin install plannotator@arumry-plugins"
 echo ""
 echo "The /plannotator-review command is ready to use after you restart Claude Code!"
